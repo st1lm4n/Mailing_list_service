@@ -15,12 +15,12 @@ from mailing.views import UserRegisterForm
 from .models import User
 
 
-@permission_required('auth.can_disable_user')
+@permission_required("auth.can_disable_user")
 def toggle_user_active(request, pk):
     user = get_object_or_404(User, pk=pk)
     user.is_active = not user.is_active
     user.save()
-    return redirect('user_list')
+    return redirect("user_list")
 
 
 @staff_member_required
@@ -28,11 +28,11 @@ def toggle_user_block(request, pk):
     user = get_object_or_404(User, pk=pk)
     user.is_active = not user.is_active
     user.save()
-    return redirect('user_list')
+    return redirect("user_list")
 
 
 def register(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserRegisterForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
@@ -41,16 +41,19 @@ def register(request):
 
             # Отправка письма с подтверждением
             current_site = get_current_site(request)
-            mail_subject = 'Активация вашего аккаунта'
+            mail_subject = "Активация вашего аккаунта"
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
-            activation_url = reverse('activate', args=[uid, token])
+            activation_url = reverse("activate", args=[uid, token])
             activation_link = f"http://{current_site.domain}{activation_url}"
 
-            message = render_to_string('users/activation_email.html', {
-                'user': user,
-                'activation_link': activation_link,
-            })
+            message = render_to_string(
+                "users/activation_email.html",
+                {
+                    "user": user,
+                    "activation_link": activation_link,
+                },
+            )
 
             send_mail(
                 mail_subject,
@@ -60,14 +63,14 @@ def register(request):
                 fail_silently=False,
             )
 
-            return redirect('activation_sent')
+            return redirect("activation_sent")
     else:
         form = UserRegisterForm()
-    return render(request, 'users/register.html', {'form': form})
+    return render(request, "users/register.html", {"form": form})
 
 
 def activation_sent(request):
-    return render(request, 'users/activation_sent.html')
+    return render(request, "users/activation_sent.html")
 
 
 def activate(request, uidb64, token):
@@ -81,6 +84,6 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
         login(request, user)
-        return redirect('home')
+        return redirect("home")
     else:
-        return render(request, 'users/activation_invalid.html')
+        return render(request, "users/activation_invalid.html")

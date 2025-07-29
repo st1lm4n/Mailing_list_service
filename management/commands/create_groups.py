@@ -5,11 +5,11 @@ from mailing.models import Mailing
 
 
 class Command(BaseCommand):
-    help = 'Создает группы пользователей и назначает права'
+    help = "Создает группы пользователей и назначает права"
 
     def handle(self, *args, **kwargs):
         # Группа менеджеров
-        manager_group, created = Group.objects.get_or_create(name='Managers')
+        manager_group, created = Group.objects.get_or_create(name="Managers")
 
         # Разрешения для менеджеров
         content_type = ContentType.objects.get_for_model(Mailing)
@@ -17,12 +17,12 @@ class Command(BaseCommand):
         manager_group.permissions.set(permissions)
 
         # Добавляем специальное разрешение для блокировки пользователей
-        user_content_type = ContentType.objects.get(model='user')
+        user_content_type = ContentType.objects.get(model="user")
         disable_perm, _ = Permission.objects.get_or_create(
-            codename='can_disable_user',
-            name='Can disable user',
-            content_type=user_content_type
+            codename="can_disable_user",
+            name="Can disable user",
+            content_type=user_content_type,
         )
         manager_group.permissions.add(disable_perm)
 
-        self.stdout.write(self.style.SUCCESS('Группы и разрешения успешно созданы'))
+        self.stdout.write(self.style.SUCCESS("Группы и разрешения успешно созданы"))

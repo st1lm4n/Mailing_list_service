@@ -8,25 +8,23 @@ from django.utils.encoding import force_bytes
 
 
 def send_mailing(mailing):
-    recipients = mailing.recipients.values_list('email', flat=True)
+    recipients = mailing.recipients.values_list("email", flat=True)
 
     for email in recipients:
         try:
             send_mail(
                 mailing.message.subject,
                 mailing.message.body,
-                'noreply@yourdomain.com',
+                "noreply@yourdomain.com",
                 [email],
-                fail_silently=False
+                fail_silently=False,
             )
-            status = 'success'
-            response = 'OK'
+            status = "success"
+            response = "OK"
         except Exception as e:
-            status = 'fail'
+            status = "fail"
             response = str(e)
 
         MailingAttempt.objects.create(
-            mailing=mailing,
-            status=status,
-            server_response=response
+            mailing=mailing, status=status, server_response=response
         )

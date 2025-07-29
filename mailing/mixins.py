@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 
 class ManagerRequiredMixin(UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.groups.filter(name='Managers').exists()
+        return self.request.user.groups.filter(name="Managers").exists()
 
     def get_queryset(self):
         if self.request.user.is_manager:

@@ -14,14 +14,16 @@ def update_mailing_statuses():
     now = timezone.now()
 
     # Обновление статусов для активных рассылок
-    for mailing in Mailing.objects.filter(status__in=[Mailing.STATUS_CREATED, Mailing.STATUS_STARTED]):
+    for mailing in Mailing.objects.filter(
+        status__in=[Mailing.STATUS_CREATED, Mailing.STATUS_STARTED]
+    ):
         if now > mailing.end_time:
             mailing.status = Mailing.STATUS_COMPLETED
-            mailing.save(update_fields=['status'])
+            mailing.save(update_fields=["status"])
         elif mailing.start_time <= now <= mailing.end_time:
             if mailing.status == Mailing.STATUS_CREATED:
                 mailing.status = Mailing.STATUS_STARTED
-                mailing.save(update_fields=['status'])
+                mailing.save(update_fields=["status"])
 
 
 def schedule_mailing(mailing_id):
@@ -29,17 +31,17 @@ def schedule_mailing(mailing_id):
     mailing = Mailing.objects.get(id=mailing_id)
 
     # Удаляем старую задачу если есть
-    job_id = f'mailing_{mailing_id}'
+    job_id = f"mailing_{mailing_id}"
     if scheduler.get_job(job_id):
         scheduler.remove_job(job_id)
 
     # Планируем новую задачу
     scheduler.add_job(
         send_mailing_task,
-        'date',
+        "date",
         run_date=mailing.start_time,
         args=[mailing_id],
-        id=job_id
+        id=job_id,
     )
 
 
