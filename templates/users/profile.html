@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль пользователя{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-light py-3">
+                <h3 class="my-1 text-center">Профиль пользователя</h3>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <div class="mx-auto mb-3" style="width: 120px; height: 120px;">
+                        {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}" class="img-thumbnail rounded-circle" alt="Аватар">
+                        {% else %}
+                        <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                            <i class="bi bi-person fs-1 text-light"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <h4>{{ user.email }}</h4>
+                    <p class="text-muted">Зарегистрирован: {{ user.date_joined|date:"d.m.Y" }}</p>
+                </div>
+                
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Аватар</label>
+                        {{ form.avatar }}
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Имя</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Фамилия</label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Телефон</label>
+                        {{ form.phone }}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Страна</label>
+                        {{ form.country }}
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Обновить профиль</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

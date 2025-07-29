@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Детальная статистика рассылки #{{ mailing.id }}</h2>
+<p><strong>Статус:</strong> {{ mailing.get_status_display }}</p>
+<p><strong>Сообщение:</strong> {{ mailing.message.subject }}</p>
+
+<div class="stats">
+    <h3>Общая статистика:</h3>
+    <ul>
+        <li>Всего попыток: {{ stats.total }}</li>
+        <li>Успешных: {{ stats.success }}</li>
+        <li>Неудачных: {{ stats.failed }}</li>
+        <li>Уникальных получателей: {{ stats.unique_recipients }}</li>
+    </ul>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Время попытки</th>
+            <th>Получатель</th>
+            <th>Статус</th>
+            <th>Ответ сервера</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for attempt in attempts %}
+        <tr class="{% if attempt.status == 'success' %}table-success{% else %}table-danger{% endif %}">
+            <td>{{ attempt.attempt_time }}</td>
+            <td>{{ attempt.recipient.email }}</td>
+            <td>{{ attempt.get_status_display }}</td>
+            <td>{{ attempt.server_response|truncatechars:50 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
