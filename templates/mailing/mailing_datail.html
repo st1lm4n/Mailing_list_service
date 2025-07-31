@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ object.message.subject }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="bi bi-envelope-paper me-2"></i>
+        {{ object.message.subject }}
+    </h2>
+    <div>
+        <span class="badge bg-{% if object.status == 'Запущена' %}success{% elif object.status == 'Завершена' %}secondary{% else %}primary{% endif %} fs-6">
+            {{ object.status }}
+        </span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header bg-light py-3">
+                <h4 class="my-1">Детали рассылки</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5>Содержание сообщения:</h5>
+                    <div class="border p-3 rounded bg-light">
+                        <h4>{{ object.message.subject }}</h4>
+                        <hr>
+                        {{ object.message.body|linebreaks }}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h5>Дата начала:</h5>
+                        <p>{{ object.start_time|date:"d.m.Y H:i" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Дата окончания:</h5>
+                        <p>{{ object.end_time|date:"d.m.Y H:i" }}</p>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h5>Получатели:</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for client in object.clients.all %}
+                        <span class="badge bg-primary">
+                            {{ client.email }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer d-flex justify-content-between">
+                <a href="{% url 'mailing_list' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Назад
+                </a>
+                <div>
+                    <a href="{% url 'mailing_update' object.id %}" class="btn btn-outline-primary">
+                        <i class="bi bi-pencil"></i> Редактировать
+                    </a>
+                    <a href="{% url 'mailing_send' object.id %}" class="btn btn-success">
+                        <i class="bi bi-send"></i> Отправить сейчас
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-light py-3">
+                <h4 class="my-1">Статистика</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h5>Попытки отправки:</h5>
+                    <div class="d-flex justify-content-around text-center my-4">
+                        <div>
+                            <div class="fs-1 text-success">{{ success_logs }}</div>
+                            <div class="text-muted">Успешно</div>
+                        </div>
+                        <div>
+                            <div class="fs-1 text-danger">{{ failed_logs }}</div>
+                            <div class="text-muted">Неудачно</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h5>Последние попытки:</h5>
+                    <ul class="list-group list-group-flush">
+                        {% for log in latest_logs %}
+                        <li class="list-group-item d-flex justify-content-between">
+                            <div>
+                                <span class="badge bg-{% if log.status == 'Успешно' %}success{% else %}danger{% endif %}">
+                                    {{ log.status }}
+                                </span>
+                                <small class="text-muted ms-2">{{ log.attempt_time|date:"H:i" }}</small>
+                            </div>
+                            <div class="text-truncate ms-2" style="max-width: 150px;" title="{{ log.server_response }}">
+                                {{ log.server_response|truncatechars:25 }}
+                            </div>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-center text-muted py-3">
+                            Нет данных о попытках
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="card-footer text-center">
+                <a href="{% url 'log_list' %}" class="btn btn-outline-primary btn-sm">
+                    Все логи <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load cache %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <h1 class="display-4 fw-bold mb-3">Управление рассылками</h1>
+    <p class="lead">Профессиональный инструмент для email-маркетинга</p>
+</div>
+
+{% cache 300 home_stats %}
+<div class="row mb-5">
+    <div class="col-md-4 mb-3">
+        <div class="card stat-card bg-primary text-white">
+            <div class="card-body text-center py-4">
+                <h1 class="display-1">{{ total_mailings }}</h1>
+                <p class="fs-5">Всего рассылок</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card stat-card bg-success text-white">
+            <div class="card-body text-center py-4">
+                <h1 class="display-1">{{ active_mailings }}</h1>
+                <p class="fs-5">Активных рассылок</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card stat-card bg-info text-white">
+            <div class="card-body text-center py-4">
+                <h1 class="display-1">{{ unique_clients }}</h1>
+                <p class="fs-5">Уникальных клиентов</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endcache %}
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h3 class="my-2">Последние рассылки</h3>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for mailing in latest_mailings %}
+                    <a href="{% url 'mailing_detail' mailing.id %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ mailing.message.subject }}</h5>
+                            <small class="text-{% if mailing.status == 'Запущена' %}success{% elif mailing.status == 'Завершена' %}secondary{% else %}primary{% endif %}">
+                                {{ mailing.status }}
+                            </small>
+                        </div>
+                        <p class="mb-1">Начало: {{ mailing.start_time|date:"d.m.Y H:i" }}</p>
+                        <small>Клиентов: {{ mailing.clients.count }}</small>
+                    </a>
+                    {% empty %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-envelope-x fs-1 text-muted"></i>
+                        <p class="mt-3">Нет активных рассылок</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card-footer text-center">
+                <a href="{% url 'mailing_list' %}" class="btn btn-primary">
+                    Все рассылки <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
