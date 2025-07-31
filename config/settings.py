@@ -30,21 +30,20 @@ DEBUG = "True"
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = "users.User"
+AUTH_USER_MODEL = 'users.User'
 
-User = AUTH_USER_MODEL
 
 # Application definition
 
 INSTALLED_APPS = [
-    "users",
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "mailing",
+    'users',
+    'mailing',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
 ]
 
 MIDDLEWARE = [
